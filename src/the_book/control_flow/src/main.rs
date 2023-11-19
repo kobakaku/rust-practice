@@ -1,6 +1,6 @@
 fn main() {
     // letの中に条件式を入れる
-    let condition = true;
+    let condition: bool = true;
     let number = if condition { 5 } else { 6 };
     println!("The value of number is: {}", number);
 
