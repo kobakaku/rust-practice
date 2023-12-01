@@ -1,0 +1,43 @@
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    // 新規スレッド作成
+    let (tx, rx) = mpsc::channel();
+    // ２つ目のスレッド作成
+    let tx1 = mpsc::Sender::clone(&tx);
+
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("hi"),
+            String::from("from"),
+            String::from("the"),
+            String::from("thread"),
+        ];
+
+        for val in vals {
+            tx.send(val).unwrap();
+            // send関数は引数の所有権を奪い、値がムーブされると受信側が所有権を得る。
+            // println!("val is {}", val);
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("more"),
+            String::from("messages"),
+            String::from("for"),
+            String::from("you"),
+        ];
+
+        for val in vals {
+            tx1.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx {
+        println!("Got: {}", received);
+    }
+}
