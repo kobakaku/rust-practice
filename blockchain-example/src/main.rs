@@ -1,5 +1,8 @@
+mod p2p;
+
 use chrono::Utc;
 use log::{error, info, warn};
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 pub struct App {
@@ -96,6 +99,7 @@ impl App {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Block {
     pub id: u64,
     pub hash: String,
