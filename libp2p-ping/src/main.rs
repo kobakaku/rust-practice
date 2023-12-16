@@ -1,11 +1,22 @@
 use futures::prelude::*;
-use libp2p::{noise, ping, swarm::SwarmEvent, tcp, yamux, Multiaddr};
+use libp2p::{
+    identify, noise,
+    ping::{self},
+    swarm::{NetworkBehaviour, SwarmEvent},
+    tcp, yamux, Multiaddr,
+};
 use log::{info, warn};
 use std::{error::Error, time::Duration};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     pretty_env_logger::init();
+
+    #[derive(NetworkBehaviour)]
+    struct MyBehaviour {
+        identify: identify::Behaviour,
+        ping: ping::Behaviour,
+    }
 
     let mut swarm = libp2p::SwarmBuilder::with_new_identity()
         .with_tokio()
@@ -14,7 +25,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
             noise::Config::new,
             yamux::Config::default,
         )?
-        .with_behaviour(|_| ping::Behaviour::default())?
+        .with_behaviour(|key| MyBehaviour {
+            identify: identify::Behaviour::new(identify::Config::new(
+                "/ipfs/0.1.0".into(),
+                key.public(),
+            )),
+            ping: ping::Behaviour::new(ping::Config::new()),
+        })?
         .with_swarm_config(|cfg| cfg.with_idle_connection_timeout(Duration::from_secs(u64::MAX)))
         .build();
 
@@ -34,7 +51,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
             } => info!("Listening on {address:?}, listener id {listener_id:?}"),
             SwarmEvent::ConnectionEstablished { .. } => info!("connection establish"),
             SwarmEvent::ConnectionClosed { .. } => warn!("connection close"),
-            SwarmEvent::Behaviour(event) => info!("{event:?}"),
+            SwarmEvent::Behaviour(MyBehaviourEvent::Identify(event)) => {
+                info!("identify: {event:?}");
+            }
             _ => {}
         }
     }
