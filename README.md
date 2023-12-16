@@ -4,6 +4,8 @@
 
 ・`lib-p2p-example`(https://blog.logrocket.com/libp2p-tutorial-build-a-peer-to-peer-app-in-rust/#installingrust)
 
+・`lib-p2p-ping`(https://github.com/libp2p/rust-libp2p/blob/master/examples/ping/src/main.rs)
+
 ・`rust-and-wasm` (https://rustwasm.github.io/docs/book/introduction.html)
 
 ・`rusty-journal` (https://learn.microsoft.com/ja-jp/training/modules/rust-create-command-line-program/)
