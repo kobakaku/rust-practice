@@ -1,13 +1,11 @@
 use futures::prelude::*;
 use libp2p::{noise, ping, swarm::SwarmEvent, tcp, yamux, Multiaddr};
+use log::{info, warn};
 use std::{error::Error, time::Duration};
-use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
-        .init();
+    pretty_env_logger::init();
 
     let mut swarm = libp2p::SwarmBuilder::with_new_identity()
         .with_tokio()
@@ -25,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if let Some(addr) = std::env::args().nth(1) {
         let remote = addr.parse::<Multiaddr>()?;
         swarm.dial(remote)?;
-        println!("Dialed {addr}")
+        info!("Dialed {addr}")
     }
 
     loop {
@@ -33,8 +31,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             SwarmEvent::NewListenAddr {
                 address,
                 listener_id,
-            } => println!("Listening on {address:?}, listener id {listener_id:?}"),
-            SwarmEvent::Behaviour(event) => println!("{event:?}"),
+            } => info!("Listening on {address:?}, listener id {listener_id:?}"),
+            SwarmEvent::ConnectionEstablished { .. } => info!("connection establish"),
+            SwarmEvent::ConnectionClosed { .. } => warn!("connection close"),
+            SwarmEvent::Behaviour(event) => info!("{event:?}"),
             _ => {}
         }
     }
