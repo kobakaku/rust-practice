@@ -4,6 +4,8 @@
 
 ・`libp2p-autonat`（https://github.com/libp2p/rust-libp2p/tree/master/examples/autonat）
 
+・`libp2p-chat`（https://github.com/libp2p/rust-libp2p/tree/master/examples/chat）
+
 ・`libp2p-example`(https://blog.logrocket.com/libp2p-tutorial-build-a-peer-to-peer-app-in-rust/#installingrust)
 
 ・`libp2p-ping`(https://github.com/libp2p/rust-libp2p/blob/master/examples/ping/src/main.rs)
